@@ -1,6 +1,7 @@
 from node import Node
 from layer import Layer
 from neuralnet import NeuralNet
+from visualizer import NeuralNetworkVisualizer
 
 x0 = Node(type="input")
 x1 = Node(type="input")
@@ -17,3 +18,6 @@ layer2 = Layer(position=0, nodes=[y0])
 neuralnet = NeuralNet(layers=[layer0, layer1, layer2])
 
 neuralnet.initialise_connections()
+
+visualizer = NeuralNetworkVisualizer(neuralnet)
+visualizer.draw()
