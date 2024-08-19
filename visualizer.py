@@ -8,6 +8,7 @@ class NeuralNetworkVisualizer:
     def draw(self):
         G = nx.DiGraph()
         pos = {}  # For storing the positions of the nodes
+        labels = {}  # For storing the node labels (values)
 
         # Layer-wise offset for vertical spacing
         layer_offsets = [len(layer.nodes) for layer in self.neural_net.layers]
@@ -19,23 +20,26 @@ class NeuralNetworkVisualizer:
         for i, layer in enumerate(self.neural_net.layers):
             layer_size = len(layer.nodes)
             for j, node in enumerate(layer.nodes):
-                node_id = f"{node.type}_{i}_{j}"
+                node_id = f"{i}_{j}"
                 G.add_node(node_id)
                 # Calculate the position: center the layer nodes horizontally
                 pos[node_id] = (x_offset * i, y_offset * (max_layer_size - layer_size) / 2 + j * y_offset)
 
+                # Set the node label to its value
+                labels[node_id] = f'{node.value:.2f}'
+
                 # Add edges to the next layer nodes
                 for conn in node.connections:
-                    next_node_id = f"{conn.connected_to.type}_{i+1}_{self.neural_net.layers[i+1].nodes.index(conn.connected_to)}"
+                    next_node_id = f"{i+1}_{self.neural_net.layers[i+1].nodes.index(conn.connected_to)}"
                     G.add_edge(node_id, next_node_id, weight=conn.weight)
 
         # Draw the graph
         plt.figure(figsize=(12, 8))
-        nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", edge_color="gray")
+        nx.draw(G, pos, labels=labels, with_labels=True, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", edge_color="gray")
 
         # Draw edge labels (weights)
         edge_labels = {(u, v): f'{d["weight"]:.2f}' for u, v, d in G.edges(data=True)}
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color="red")
+        nx.draw_networkx_edge_labels(G, pos, label_pos=0.2, edge_labels=edge_labels, font_color="red")
 
         plt.title("Neural Network Visualization")
         plt.show()
